@@ -1,11 +1,11 @@
-# Novolis.Media.Capture.Windows
+# Novolis.Video.Capture.Windows
 
 Windows webcam capture implementing `IVideoCaptureSource`, wrapping SIPSorceryMedia.Windows.
 
 ## Install
 
 ```bash
-dotnet add package Novolis.Media.Capture.Windows
+dotnet add package Novolis.Video.Capture.Windows
 ```
 
 ## Quick start
@@ -20,5 +20,5 @@ await cam.StartAsync();
 
 | Package | Role |
 |---------|------|
-| `Novolis.Media.Rtc.Abstractions` | `IVideoCaptureSource`, `VideoFrame` |
-| `Novolis.Media.Rtc` | Mesh session that consumes capture |
+| `Novolis.Video.Rtc.Abstractions` | `IVideoCaptureSource`, `VideoFrame` |
+| `Novolis.Video.Rtc` | Mesh session that consumes capture |

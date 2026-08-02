@@ -1,11 +1,11 @@
-# Novolis.Media.Rtc
+# Novolis.Video.Rtc
 
 SIPSorcery mesh RTC implementing `IRtcMeshSession`. Signaling is application-owned (e.g. SignalR).
 
 ## Install
 
 ```bash
-dotnet add package Novolis.Media.Rtc
+dotnet add package Novolis.Video.Rtc
 ```
 
 ## Quick start
@@ -23,6 +23,6 @@ Polite peer = lexicographically greater nick. Max peers: `IRtcMeshSession.MaxPee
 
 | Package | Role |
 |---------|------|
-| `Novolis.Media.Rtc.Abstractions` | Contracts |
-| `Novolis.Media.Capture.Windows` | Webcam |
-| `Novolis.Avalonia.Media` | UI surface |
+| `Novolis.Video.Rtc.Abstractions` | Contracts |
+| `Novolis.Video.Capture.Windows` | Webcam |
+| `Novolis.Avalonia.Video` | UI surface |

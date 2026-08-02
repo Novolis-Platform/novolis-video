@@ -1,4 +1,4 @@
-namespace Novolis.Media.Rtc;
+namespace Novolis.Video.Rtc;
 
 /// <summary>One decoded video frame for UI or encoding pipelines.</summary>
 public sealed class VideoFrame

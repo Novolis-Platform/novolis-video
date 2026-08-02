@@ -5,17 +5,17 @@
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RootNamespace>Novolis.Media.Capture.Windows</RootNamespace>
-    <AssemblyName>Novolis.Media.Capture.Windows</AssemblyName>
-    <PackageId>Novolis.Media.Capture.Windows</PackageId>
+    <RootNamespace>Novolis.Video.Capture.Windows</RootNamespace>
+    <AssemblyName>Novolis.Video.Capture.Windows</AssemblyName>
+    <PackageId>Novolis.Video.Capture.Windows</PackageId>
     <IsPackable>true</IsPackable>
-    <Description>Windows webcam capture for Novolis.Media.Rtc (SIPSorceryMedia.Windows).</Description>
+    <Description>Windows webcam capture for Novolis.Video.Rtc (SIPSorceryMedia.Windows).</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />
-    <ProjectReference Include="..\Novolis.Media.Rtc.Abstractions\Novolis.Media.Rtc.Abstractions.csproj" />
+    <ProjectReference Include="..\Novolis.Video.Rtc.Abstractions\Novolis.Video.Rtc.Abstractions.csproj" />
     <PackageReference Include="SIPSorceryMedia.Windows" />
     <PackageReference Include="SIPSorceryMedia.Abstractions" />
     <PackageReference Include="SIPSorceryMedia.Encoders" />

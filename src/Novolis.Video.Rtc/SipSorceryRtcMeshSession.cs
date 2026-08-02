@@ -1,12 +1,12 @@
 using System.Collections.Concurrent;
 using System.Text.Json;
-using Novolis.Media.Capture.Windows;
+using Novolis.Video.Capture.Windows;
 using SIPSorcery.Net;
 using SIPSorceryMedia.Abstractions;
 using SIPSorceryMedia.Encoders;
 using SIPSorceryMedia.Windows;
 
-namespace Novolis.Media.Rtc;
+namespace Novolis.Video.Rtc;
 
 /// <summary>Mesh RTC session backed by SIPSorcery + Windows capture.</summary>
 public sealed class SipSorceryRtcMeshSession : IRtcMeshSession

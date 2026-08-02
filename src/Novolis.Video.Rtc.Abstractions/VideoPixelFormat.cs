@@ -1,4 +1,4 @@
-namespace Novolis.Media.Rtc;
+namespace Novolis.Video.Rtc;
 
 /// <summary>Pixel layout for <see cref="VideoFrame"/> buffers.</summary>
 public enum VideoPixelFormat

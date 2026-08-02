@@ -1,11 +1,11 @@
-# Novolis.Media.Rtc.Abstractions
+# Novolis.Video.Rtc.Abstractions
 
 Platform-neutral contracts for mesh realtime video: frames, signaling DTOs, and `IRtcMeshSession`.
 
 ## Install
 
 ```bash
-dotnet add package Novolis.Media.Rtc.Abstractions
+dotnet add package Novolis.Video.Rtc.Abstractions
 ```
 
 ## Quick start
@@ -16,6 +16,6 @@ Implement or consume `IRtcMeshSession`. The host application supplies signaling 
 
 | Package | Role |
 |---------|------|
-| `Novolis.Media.Rtc` | SIPSorcery-backed mesh session |
-| `Novolis.Media.Capture.Windows` | Webcam capture for Windows |
-| `Novolis.Avalonia.Media` | Avalonia `VideoSurface` control |
+| `Novolis.Video.Rtc` | SIPSorcery-backed mesh session |
+| `Novolis.Video.Capture.Windows` | Webcam capture for Windows |
+| `Novolis.Avalonia.Video` | Avalonia `VideoSurface` control |

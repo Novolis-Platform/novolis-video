@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 
-namespace Novolis.Media.Capture.Windows;
+namespace Novolis.Video.Capture.Windows;
 
 /// <summary>
 /// Preloads SIPSorcery's <c>vpxmd</c> native library from the app base directory

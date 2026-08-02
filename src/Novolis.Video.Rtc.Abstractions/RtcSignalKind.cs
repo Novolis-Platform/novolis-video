@@ -1,4 +1,4 @@
-namespace Novolis.Media.Rtc;
+namespace Novolis.Video.Rtc;
 
 /// <summary>Signaling kinds for mesh RTC (application host relays these).</summary>
 public enum RtcSignalKind

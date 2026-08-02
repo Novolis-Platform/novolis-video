@@ -1,4 +1,4 @@
-namespace Novolis.Media.Rtc;
+namespace Novolis.Video.Rtc;
 
 /// <summary>
 /// Mesh RTC session for a single local nick. Signaling is out-of-band:

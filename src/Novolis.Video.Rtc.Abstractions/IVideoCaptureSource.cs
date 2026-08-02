@@ -1,4 +1,4 @@
-namespace Novolis.Media.Rtc;
+namespace Novolis.Video.Rtc;
 
 /// <summary>Produces local camera (or fallback) frames for preview and encoding.</summary>
 public interface IVideoCaptureSource : IAsyncDisposable

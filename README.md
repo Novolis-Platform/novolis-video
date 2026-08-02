@@ -6,11 +6,11 @@ Realtime video for the Novolis platform: mesh RTC contracts, SIPSorcery-backed m
 
 | Package | Role |
 |---------|------|
-| `Novolis.Media.Rtc.Abstractions` | `VideoFrame`, `IRtcMeshSession`, signal DTOs |
-| `Novolis.Media.Rtc` | SIPSorcery mesh (signaling is host-owned) |
-| `Novolis.Media.Capture.Windows` | Webcam capture for Windows |
+| `Novolis.Video.Rtc.Abstractions` | `VideoFrame`, `IRtcMeshSession`, signal DTOs |
+| `Novolis.Video.Rtc` | SIPSorcery mesh (signaling is host-owned) |
+| `Novolis.Video.Capture.Windows` | Webcam capture for Windows |
 
-Presentation stays in `Novolis.Avalonia.Media` (`VideoSurface`).
+Presentation stays in `Novolis.Avalonia.Video` (`VideoSurface`).
 
 ## Build
 

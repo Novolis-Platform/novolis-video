@@ -1,4 +1,4 @@
-namespace Novolis.Media.Rtc;
+namespace Novolis.Video.Rtc;
 
 /// <summary>One signaling message for an RTC mesh session.</summary>
 /// <param name="Kind">Signal kind.</param>

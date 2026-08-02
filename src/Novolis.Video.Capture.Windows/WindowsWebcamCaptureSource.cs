@@ -1,9 +1,9 @@
-using Novolis.Media.Rtc;
+using Novolis.Video.Rtc;
 using SIPSorceryMedia.Abstractions;
 using SIPSorceryMedia.Encoders;
 using SIPSorceryMedia.Windows;
 
-namespace Novolis.Media.Capture.Windows;
+namespace Novolis.Video.Capture.Windows;
 
 /// <summary>Webcam capture via <see cref="WindowsVideoEndPoint"/>; silent no-op if no device.</summary>
 public sealed class WindowsWebcamCaptureSource : IVideoCaptureSource

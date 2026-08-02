@@ -5,9 +5,9 @@
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RootNamespace>Novolis.Media.Rtc</RootNamespace>
-    <AssemblyName>Novolis.Media.Rtc</AssemblyName>
-    <PackageId>Novolis.Media.Rtc</PackageId>
+    <RootNamespace>Novolis.Video.Rtc</RootNamespace>
+    <AssemblyName>Novolis.Video.Rtc</AssemblyName>
+    <PackageId>Novolis.Video.Rtc</PackageId>
     <IsPackable>true</IsPackable>
     <Description>SIPSorcery-backed mesh RTC session implementing IRtcMeshSession.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -15,8 +15,8 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />
-    <ProjectReference Include="..\Novolis.Media.Rtc.Abstractions\Novolis.Media.Rtc.Abstractions.csproj" />
-    <ProjectReference Include="..\Novolis.Media.Capture.Windows\Novolis.Media.Capture.Windows.csproj" />
+    <ProjectReference Include="..\Novolis.Video.Rtc.Abstractions\Novolis.Video.Rtc.Abstractions.csproj" />
+    <ProjectReference Include="..\Novolis.Video.Capture.Windows\Novolis.Video.Capture.Windows.csproj" />
     <PackageReference Include="SIPSorcery" />
     <PackageReference Include="SIPSorceryMedia.Abstractions" />
     <PackageReference Include="SIPSorceryMedia.Windows" />
