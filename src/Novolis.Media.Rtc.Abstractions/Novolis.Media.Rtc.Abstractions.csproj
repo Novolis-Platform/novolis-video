@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="$(MSBuildThisFileDirectory)..\..\build\Novolis.Video.Packaging.props" />
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Novolis.Media.Rtc</RootNamespace>
+    <AssemblyName>Novolis.Media.Rtc.Abstractions</AssemblyName>
+    <PackageId>Novolis.Media.Rtc.Abstractions</PackageId>
+    <IsPackable>true</IsPackable>
+    <Description>RTC mesh contracts: video frames, signal messages, and IRtcMeshSession.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+</Project>

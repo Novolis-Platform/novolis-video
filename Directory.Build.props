@@ -1,0 +1,54 @@
+<Project>
+  <PropertyGroup>
+    <NovolisGitHubRepository>novolis-video</NovolisGitHubRepository>
+  </PropertyGroup>
+  <Import Project="$(MSBuildThisFileDirectory)build\version.props"
+          Condition="Exists('$(MSBuildThisFileDirectory)build\version.props')" />
+
+  <PropertyGroup Label="SDK and packages">
+    <TargetFramework>net10.0</TargetFramework>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageFloatingVersionsEnabled>true</CentralPackageFloatingVersionsEnabled>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Build quality">
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Label="NuGet compatibility">
+    <WarningsNotAsErrors>$(WarningsNotAsErrors);NU1504;NU1507;NU1510;NU1603;NU1605;NU1608;NU1901;NU1902;NU1903;NU1904;NU1701</WarningsNotAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Continuous integration" Condition="'$(CI)' == 'true' Or '$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Label="NuGet / SourceLink">
+    <Authors>Novolis</Authors>
+    <Company>Novolis</Company>
+    <Copyright>Copyright (c) Novolis-Platform</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <EnableSourceLink>true</EnableSourceLink>
+    <RepositoryType>git</RepositoryType>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup Label="SourceLink">
+    <PackageReference Include="Microsoft.SourceLink.GitHub">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)..\novolis-governance\build\Novolis.GitHubPackages.props"
+          Condition="Exists('$(MSBuildThisFileDirectory)..\novolis-governance\build\Novolis.GitHubPackages.props')" />
+</Project>

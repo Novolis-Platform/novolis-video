@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup Label="Novolis.Video NuGet metadata">
+    <Authors>Novolis</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/Novolis-Platform/novolis-video</RepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageTags>video;webrtc;rtc;mesh;sipsorcery;capture;gamedev</PackageTags>
+  </PropertyGroup>
+</Project>

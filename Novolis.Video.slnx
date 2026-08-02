@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Novolis.Media.Rtc.Abstractions/Novolis.Media.Rtc.Abstractions.csproj" />
+    <Project Path="src/Novolis.Media.Capture.Windows/Novolis.Media.Capture.Windows.csproj" />
+    <Project Path="src/Novolis.Media.Rtc/Novolis.Media.Rtc.csproj" />
+  </Folder>
+</Solution>
