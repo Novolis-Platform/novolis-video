@@ -49,4 +49,49 @@ public sealed class MovieEditOpsTests
         await Assert.That(frame.Pixels[1]).IsEqualTo((byte)20); // G
         await Assert.That(frame.Pixels[2]).IsEqualTo((byte)10); // R
     }
+
+    [Test]
+    public async Task Composer_FadesBetweenClips()
+    {
+        var project = new MovieProject("Fade", 4, 2);
+        var a = MovieEditOps.AddColorCard(project, "A", new Rgba8(0, 0, 0), TimeSpan.FromSeconds(1));
+        var b = MovieEditOps.AddColorCard(project, "B", new Rgba8(255, 255, 255), TimeSpan.FromSeconds(1));
+        var clipA = MovieEditOps.AppendToStoryboard(project, a);
+        MovieEditOps.AppendToStoryboard(project, b);
+        MovieEditOps.SetOutTransition(clipA, TransitionKind.Fade, TimeSpan.FromSeconds(0.5));
+
+        var mid = new MoviePreviewComposer().Compose(project, TimeSpan.FromSeconds(0.75));
+        await Assert.That(mid.Pixels[2]).IsGreaterThan((byte)100); // R channel mid-grey-ish
+        await Assert.That(mid.Pixels[2]).IsLessThan((byte)200);
+    }
+
+    [Test]
+    public async Task Exporter_WritesFramesAudioAndManifest()
+    {
+        var dir = Path.Combine(Path.GetTempPath(), "novolis-movie-export-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            var project = new MovieProject("Export", 16, 9);
+            var card = MovieEditOps.AddColorCard(project, "Card", new Rgba8(10, 20, 30), TimeSpan.FromSeconds(1));
+            MovieEditOps.AppendToStoryboard(project, card);
+            MovieEditOps.AddTextOverlay(project, "Hi", TimeSpan.Zero, TimeSpan.FromSeconds(1));
+
+            var wav = Path.Combine(dir, "tone.wav");
+            Directory.CreateDirectory(dir);
+            var audio = MovieEditOps.AddToneAudio(project, "Tone", wav, 440, TimeSpan.FromSeconds(1));
+            MovieEditOps.AppendAudio(project, audio);
+
+            var result = new MovieExporter().Export(project, Path.Combine(dir, "out"), framesPerSecond: 5);
+            await Assert.That(result.FrameCount).IsEqualTo(5);
+            await Assert.That(File.Exists(result.VideoPath)).IsTrue();
+            await Assert.That(result.VideoPath.EndsWith(".avi", StringComparison.OrdinalIgnoreCase)).IsTrue();
+            await Assert.That(File.Exists(Path.Combine(result.OutputDirectory, "movie.json"))).IsTrue();
+            await Assert.That(result.AudioPath).IsNotNull();
+        }
+        finally
+        {
+            if (Directory.Exists(dir))
+                Directory.Delete(dir, recursive: true);
+        }
+    }
 }

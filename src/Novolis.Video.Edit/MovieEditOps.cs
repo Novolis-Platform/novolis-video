@@ -39,6 +39,21 @@ public static class MovieEditOps
         return asset;
     }
 
+    /// <summary>Creates a sine-tone WAV on disk and adds it as an audio asset.</summary>
+    public static MediaAsset AddToneAudio(
+        MovieProject project,
+        string name,
+        string wavPath,
+        double frequencyHz,
+        TimeSpan duration)
+    {
+        ArgumentNullException.ThrowIfNull(project);
+        ToneAudio.WriteSineWav(wavPath, frequencyHz, duration);
+        var asset = new MediaAsset(Guid.NewGuid(), name, MediaKind.Audio, duration, wavPath);
+        project.MutableAssets.Add(asset);
+        return asset;
+    }
+
     public static TimelineClip AppendToStoryboard(MovieProject project, MediaAsset asset, TimeSpan? duration = null)
     {
         ArgumentNullException.ThrowIfNull(project);
@@ -51,6 +66,48 @@ public static class MovieEditOps
         var clip = new TimelineClip(Guid.NewGuid(), asset.Id, start, clipDuration);
         project.MutableClips.Add(clip);
         return clip;
+    }
+
+    /// <summary>Places an audio asset on the audio track (starts at current audio end by default).</summary>
+    public static TimelineClip AppendAudio(MovieProject project, MediaAsset asset, TimeSpan? start = null)
+    {
+        ArgumentNullException.ThrowIfNull(project);
+        ArgumentNullException.ThrowIfNull(asset);
+        if (asset.Kind != MediaKind.Audio)
+            throw new ArgumentException("Asset must be audio.", nameof(asset));
+        if (project.FindAsset(asset.Id) is null)
+            throw new InvalidOperationException("Asset is not in this project.");
+
+        var t = start ?? AudioTrackEnd(project);
+        var clip = new TimelineClip(Guid.NewGuid(), asset.Id, t, asset.Duration);
+        project.MutableAudioClips.Add(clip);
+        return clip;
+    }
+
+    public static TextOverlay AddTextOverlay(
+        MovieProject project,
+        string text,
+        TimeSpan start,
+        TimeSpan duration,
+        Rgba8? color = null,
+        double anchorX = 0.5,
+        double anchorY = 0.82)
+    {
+        ArgumentNullException.ThrowIfNull(project);
+        var overlay = new TextOverlay(Guid.NewGuid(), text, start, duration, color, anchorX, anchorY);
+        project.MutableTextOverlays.Add(overlay);
+        return overlay;
+    }
+
+    public static void SetOutTransition(
+        TimelineClip clip,
+        TransitionKind kind,
+        TimeSpan duration)
+    {
+        ArgumentNullException.ThrowIfNull(clip);
+        ArgumentOutOfRangeException.ThrowIfNegative(duration.Ticks);
+        clip.OutTransition = kind;
+        clip.OutTransitionDuration = duration;
     }
 
     public static bool RemoveClip(MovieProject project, Guid clipId, bool compact = true)
@@ -90,7 +147,14 @@ public static class MovieEditOps
         var rightOffset = clip.SourceOffset + leftDuration;
         clip.Duration = leftDuration;
 
-        var right = new TimelineClip(Guid.NewGuid(), clip.AssetId, timelineTime, rightDuration, rightOffset);
+        var right = new TimelineClip(Guid.NewGuid(), clip.AssetId, timelineTime, rightDuration, rightOffset)
+        {
+            OutTransition = clip.OutTransition,
+            OutTransitionDuration = clip.OutTransitionDuration,
+        };
+        clip.OutTransition = TransitionKind.None;
+        clip.OutTransitionDuration = TimeSpan.Zero;
+
         var index = project.MutableClips.IndexOf(clip);
         project.MutableClips.Insert(index + 1, right);
         return right;
@@ -114,5 +178,17 @@ public static class MovieEditOps
         if (compact)
             CompactStoryboard(project);
         return true;
+    }
+
+    static TimeSpan AudioTrackEnd(MovieProject project)
+    {
+        var end = TimeSpan.Zero;
+        foreach (var clip in project.AudioClips)
+        {
+            if (clip.TimelineEnd > end)
+                end = clip.TimelineEnd;
+        }
+
+        return end;
     }
 }

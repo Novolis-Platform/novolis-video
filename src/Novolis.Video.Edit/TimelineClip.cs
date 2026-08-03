@@ -27,6 +27,12 @@ public sealed class TimelineClip
     public TimeSpan SourceOffset { get; set; }
     public TimeSpan TimelineEnd => TimelineStart + Duration;
 
+    /// <summary>Transition played over the last <see cref="OutTransitionDuration"/> into the next clip.</summary>
+    public TransitionKind OutTransition { get; set; } = TransitionKind.None;
+
+    /// <summary>Length of the outgoing transition (clamped to clip duration at compose time).</summary>
+    public TimeSpan OutTransitionDuration { get; set; }
+
     public bool Contains(TimeSpan timelineTime) =>
         timelineTime >= TimelineStart && timelineTime < TimelineEnd;
 

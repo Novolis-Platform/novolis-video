@@ -1,3 +1,11 @@
+<!-- novolis-pkg-brand:start -->
+<p align="center">
+  <a href="https://github.com/Novolis-Platform/novolis-video">
+    <img src="https://raw.githubusercontent.com/Novolis-Platform/.github/main/brand/logo-icon.svg" width="72" alt="Novolis"/>
+  </a>
+</p>
+<!-- novolis-pkg-brand:end -->
+
 # Novolis.Video.Rtc
 
 SIPSorcery mesh RTC implementing `IRtcMeshSession`. Signaling is application-owned (e.g. SignalR).
@@ -26,3 +34,4 @@ Polite peer = lexicographically greater nick. Max peers: `IRtcMeshSession.MaxPee
 | `Novolis.Video.Rtc.Abstractions` | Contracts |
 | `Novolis.Video.Capture.Windows` | Webcam |
 | `Novolis.Avalonia.Video` | UI surface |
+
