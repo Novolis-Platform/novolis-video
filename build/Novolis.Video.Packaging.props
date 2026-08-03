@@ -5,6 +5,6 @@
     <RepositoryUrl>https://github.com/Novolis-Platform/novolis-video</RepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <PackageTags>video;webrtc;rtc;mesh;sipsorcery;capture;gamedev</PackageTags>
+    <PackageTags>video;webrtc;rtc;mesh;sipsorcery;capture;edit;storyboard;gamedev</PackageTags>
   </PropertyGroup>
 </Project>

@@ -1,7 +1,11 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/Novolis.Video.Rtc.Abstractions/Novolis.Video.Rtc.Abstractions.csproj" />
+    <Project Path="src/Novolis.Video.Edit/Novolis.Video.Edit.csproj" />
     <Project Path="src/Novolis.Video.Capture.Windows/Novolis.Video.Capture.Windows.csproj" />
     <Project Path="src/Novolis.Video.Rtc/Novolis.Video.Rtc.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Novolis.Video.Edit.Unit/Novolis.Video.Edit.Unit.csproj" />
   </Folder>
 </Solution>

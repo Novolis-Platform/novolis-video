@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="$(MSBuildThisFileDirectory)..\..\build\Novolis.Video.Packaging.props" />
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Novolis.Video.Edit</RootNamespace>
+    <AssemblyName>Novolis.Video.Edit</AssemblyName>
+    <PackageId>Novolis.Video.Edit</PackageId>
+    <IsPackable>true</IsPackable>
+    <Description>Minimal Movie Maker–style project model: collections, storyboard clips, transport, and solid-color preview frames.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>video;edit;timeline;storyboard;movie-maker;gamedev</PackageTags>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <ProjectReference Include="..\Novolis.Video.Rtc.Abstractions\Novolis.Video.Rtc.Abstractions.csproj" />
+  </ItemGroup>
+</Project>
