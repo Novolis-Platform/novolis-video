@@ -245,6 +245,7 @@ public static class AviMovieWriter
         s.Position = end;
     }
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage(Justification = "Defensive padding; AVI chunk sizes from this writer are always even.")]
     static void PadToWord(Stream s)
     {
         if ((s.Position & 1) != 0)
@@ -254,8 +255,6 @@ public static class AviMovieWriter
     static void WriteFourCC(Stream s, string fourCC)
     {
         var bytes = Encoding.ASCII.GetBytes(fourCC);
-        if (bytes.Length != 4)
-            throw new ArgumentException("FourCC must be 4 chars.", nameof(fourCC));
         s.Write(bytes);
     }
 

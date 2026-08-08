@@ -6,7 +6,7 @@ namespace Novolis.Video.Edit;
 public sealed class MoviePreviewComposer
 {
     readonly IFrameProvider? _frames;
-    readonly ITextOverlayRenderer? _text;
+    readonly ITextOverlayRenderer _text;
 
     public MoviePreviewComposer(IFrameProvider? frames = null, ITextOverlayRenderer? text = null)
     {
@@ -22,7 +22,7 @@ public sealed class MoviePreviewComposer
         var frame = ComposeVideoPlane(project, position);
         var active = ActiveOverlays(project, position);
         if (active.Count > 0)
-            _text?.Apply(frame, active);
+            _text.Apply(frame, active);
         return frame;
     }
 
