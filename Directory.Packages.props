@@ -9,6 +9,6 @@
     <PackageVersion Include="SIPSorceryMedia.Abstractions" Version="10.0.16" />
     <PackageVersion Include="SIPSorceryMedia.Windows" Version="10.0.16" />
     <PackageVersion Include="SIPSorceryMedia.Encoders" Version="10.0.4" />
-    <PackageVersion Include="TUnit" Version="1.44.39" />
+    <PackageVersion Include="TUnit" Version="1.68.17" />
   </ItemGroup>
 </Project>
