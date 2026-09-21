@@ -1,4 +1,4 @@
-using Novolis.Video.Rtc;
+using Rtc = Novolis.Video.Rtc;
 using SIPSorceryMedia.Abstractions;
 using SIPSorceryMedia.Encoders;
 using SIPSorceryMedia.Windows;
@@ -6,19 +6,19 @@ using SIPSorceryMedia.Windows;
 namespace Novolis.Video.Capture.Windows;
 
 /// <summary>Webcam capture via <see cref="WindowsVideoEndPoint"/>; silent no-op if no device.</summary>
-public sealed class WindowsWebcamCaptureSource : IVideoCaptureSource
+public sealed class WindowsWebcamCaptureSource : Rtc.IVideoCaptureSource
 {
     readonly VpxVideoEncoder _encoder = new();
     WindowsVideoEndPoint? _endpoint;
     int _started;
 
-    public event Action<VideoFrame>? FrameCaptured;
+    public event Action<Rtc.VideoFrame>? FrameCaptured;
 
     /// <summary>Underlying SIPSorcery endpoint for RTC wiring (null until started).</summary>
     public WindowsVideoEndPoint? Endpoint => _endpoint;
 
     /// <summary>Shared VP8 encoder used by the endpoint.</summary>
-    public IVideoEncoder Encoder => _encoder;
+    public SIPSorceryMedia.Abstractions.IVideoEncoder Encoder => _encoder;
 
     public async Task StartAsync(CancellationToken cancellationToken = default)
     {
@@ -73,13 +73,13 @@ public sealed class WindowsWebcamCaptureSource : IVideoCaptureSource
     {
         var format = pixelFormat switch
         {
-            VideoPixelFormatsEnum.Bgra => VideoPixelFormat.Bgra32,
-            _ => VideoPixelFormat.Bgr24,
+            VideoPixelFormatsEnum.Bgra => Rtc.VideoPixelFormat.Bgra32,
+            _ => Rtc.VideoPixelFormat.Bgr24,
         };
-        var stride = format == VideoPixelFormat.Bgra32 ? width * 4 : width * 3;
+        var stride = format == Rtc.VideoPixelFormat.Bgra32 ? width * 4 : width * 3;
         var copy = new byte[sample.Length];
         Buffer.BlockCopy(sample, 0, copy, 0, sample.Length);
-        FrameCaptured?.Invoke(new VideoFrame(width, height, stride, format, copy));
+        FrameCaptured?.Invoke(new Rtc.VideoFrame(width, height, stride, format, copy));
     }
 
     public async ValueTask DisposeAsync()

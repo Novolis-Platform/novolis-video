@@ -1,5 +1,7 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/Novolis.Video.Abstractions/Novolis.Video.Abstractions.csproj" />
+    <Project Path="src/Novolis.Video.Codecs.H264/Novolis.Video.Codecs.H264.csproj" />
     <Project Path="src/Novolis.Video.Rtc.Abstractions/Novolis.Video.Rtc.Abstractions.csproj" />
     <Project Path="src/Novolis.Video.Edit/Novolis.Video.Edit.csproj" />
     <Project Path="src/Novolis.Video.Capture.Windows/Novolis.Video.Capture.Windows.csproj" />

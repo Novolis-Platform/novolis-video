@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="$(MSBuildThisFileDirectory)..\..\build\Novolis.Video.Packaging.props" />
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Novolis.Video</RootNamespace>
+    <AssemblyName>Novolis.Video.Abstractions</AssemblyName>
+    <PackageId>Novolis.Video.Abstractions</PackageId>
+    <IsPackable>true</IsPackable>
+    <Description>Platform-neutral capture, encoded-frame, encoder, and decoder contracts.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+</Project>

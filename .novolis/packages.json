@@ -1,0 +1,12 @@
+{
+  "packages": {
+    "Novolis.Video.Abstractions": {
+      "project": "src/Novolis.Video.Abstractions/Novolis.Video.Abstractions.csproj",
+      "paths": ["src/Novolis.Video.Abstractions/**", "Novolis.Video.slnx"]
+    },
+    "Novolis.Video.Codecs.H264": {
+      "project": "src/Novolis.Video.Codecs.H264/Novolis.Video.Codecs.H264.csproj",
+      "paths": ["src/Novolis.Video.Codecs.H264/**", "Novolis.Video.slnx"]
+    }
+  }
+}

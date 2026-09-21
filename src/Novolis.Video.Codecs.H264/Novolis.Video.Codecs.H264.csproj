@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="$(MSBuildThisFileDirectory)..\..\build\Novolis.Video.Packaging.props" />
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <RootNamespace>Novolis.Video.Codecs.H264</RootNamespace>
+    <AssemblyName>Novolis.Video.Codecs.H264</AssemblyName>
+    <PackageId>Novolis.Video.Codecs.H264</PackageId>
+    <IsPackable>true</IsPackable>
+    <Description>Windows Media Foundation H.264 encoding and decoding.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <ProjectReference Include="..\Novolis.Video.Abstractions\Novolis.Video.Abstractions.csproj" />
+    <PackageReference Include="SharpMediaFoundationInterop" />
+  </ItemGroup>
+</Project>

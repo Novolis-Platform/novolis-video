@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Novolis.Video.Capture.Windows</RootNamespace>
@@ -15,6 +16,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />
+    <ProjectReference Include="..\Novolis.Video.Abstractions\Novolis.Video.Abstractions.csproj" />
     <ProjectReference Include="..\Novolis.Video.Rtc.Abstractions\Novolis.Video.Rtc.Abstractions.csproj" />
     <PackageReference Include="SIPSorceryMedia.Windows" />
     <PackageReference Include="SIPSorceryMedia.Abstractions" />
