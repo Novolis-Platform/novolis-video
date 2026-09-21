@@ -13,6 +13,14 @@ public interface IRtcMeshSession : IAsyncDisposable
 
     bool IsInVideo { get; }
 
+    bool IsMuted { get; }
+
+    /// <summary>Changes whether the local audio source is sent to peers.</summary>
+    void SetMuted(bool muted);
+
+    /// <summary>Reports a local audio initialization or device error without ending video.</summary>
+    event Action<Exception>? AudioError;
+
     /// <summary>Signals the host must relay (SignalR, etc.).</summary>
     event Action<RtcSignalMessage>? LocalSignal;
 

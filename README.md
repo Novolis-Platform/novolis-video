@@ -58,7 +58,7 @@ Realtime video and a minimal Movie Maker–style edit core for the Novolis platf
 | Package | Role |
 |---------|------|
 | `Novolis.Video.Rtc.Abstractions` | `VideoFrame`, `IRtcMeshSession`, signal DTOs |
-| `Novolis.Video.Rtc` | SIPSorcery mesh (signaling is host-owned) |
+| `Novolis.Video.Rtc` | SIPSorcery Windows VP8/audio mesh (signaling is host-owned) |
 | `Novolis.Video.Capture.Windows` | Webcam capture for Windows |
 | `Novolis.Video.Edit` | Storyboard, audio track, transitions, text overlays, BMP+WAV export |
 

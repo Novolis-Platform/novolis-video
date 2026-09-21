@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Text.Json;
 using Novolis.Video.Capture.Windows;
+using SIPSorcery.Media;
 using SIPSorcery.Net;
 using SIPSorceryMedia.Abstractions;
 using SIPSorceryMedia.Encoders;
@@ -17,6 +18,9 @@ public sealed class SipSorceryRtcMeshSession : IRtcMeshSession
     WindowsWebcamCaptureSource? _capture;
     WindowsVideoEndPoint? _sharedSource;
     VpxVideoEncoder? _encoder;
+    WindowsAudioEndPoint? _audio;
+    AudioEncoder? _audioEncoder;
+    int _muted;
     int _inVideo;
 
     public SipSorceryRtcMeshSession(string localNick)
@@ -28,12 +32,16 @@ public sealed class SipSorceryRtcMeshSession : IRtcMeshSession
     public string LocalNick => _localNick;
 
     public bool IsInVideo => Volatile.Read(ref _inVideo) == 1;
+    public bool IsMuted => Volatile.Read(ref _muted) == 1;
 
+    public event Action<Exception>? AudioError;
     public event Action<RtcSignalMessage>? LocalSignal;
     public event Action<string, VideoFrame>? RemoteFrame;
     public event Action<VideoFrame>? LocalFrame;
 
     public IReadOnlyCollection<string> RemotePeers => _peers.Keys.ToArray();
+
+    public void SetMuted(bool muted) => Volatile.Write(ref _muted, muted ? 1 : 0);
 
     public async Task JoinVideoAsync(CancellationToken cancellationToken = default)
     {
@@ -53,6 +61,7 @@ public sealed class SipSorceryRtcMeshSession : IRtcMeshSession
             _sharedSource = _capture.Endpoint;
 
             Volatile.Write(ref _inVideo, 1);
+            await StartAudioAsync(cancellationToken).ConfigureAwait(false);
             Emit(new RtcSignalMessage(RtcSignalKind.VideoJoin, _localNick, string.Empty));
         }
         finally
@@ -82,8 +91,10 @@ public sealed class SipSorceryRtcMeshSession : IRtcMeshSession
                 _sharedSource = null;
             }
 
+            await StopAudioAsync().ConfigureAwait(false);
             _encoder?.Dispose();
             _encoder = null;
+            Volatile.Write(ref _muted, 0);
         }
         finally
         {
@@ -138,7 +149,9 @@ public sealed class SipSorceryRtcMeshSession : IRtcMeshSession
             if (!_peers.TryAdd(remoteNick, slot))
         {
             slot.Connection.Close("duplicate");
+            slot.UnsubscribeSource();
             slot.Sink.Dispose();
+            slot.SinkEncoder.Dispose();
             return;
         }
 
@@ -167,33 +180,83 @@ public sealed class SipSorceryRtcMeshSession : IRtcMeshSession
             iceServers = [new RTCIceServer { urls = "stun:stun.cloudflare.com:3478" }],
         });
 
-        var formats = _sharedSource?.GetVideoSourceFormats()
+        var sharedVideoSource = _sharedSource;
+        var sharedAudioSource = _audio;
+        var formats = sharedVideoSource?.GetVideoSourceFormats()
                       ?? sink.GetVideoSourceFormats();
         var track = new MediaStreamTrack(formats, MediaStreamStatusEnum.SendRecv);
         pc.addTrack(track);
 
-        if (_sharedSource is not null)
+        Action unsubscribeVideoSource = static () => { };
+        if (sharedVideoSource is not null)
         {
             void OnEncoded(uint durationRtp, byte[] sample) => pc.SendVideo(durationRtp, sample);
-            _sharedSource.OnVideoSourceEncodedSample += OnEncoded;
+            sharedVideoSource.OnVideoSourceEncodedSample += OnEncoded;
             pc.OnVideoFormatsNegotiated += negotiated =>
             {
                 if (negotiated.Count > 0)
-                    _sharedSource.SetVideoSourceFormat(negotiated[0]);
+                    sharedVideoSource.SetVideoSourceFormat(negotiated[0]);
             };
-
-            // store unsubscribe in slot via closure field
-            var slot = new PeerSlot(remoteNick, pc, sink, sinkEncoder, () =>
-            {
-                _sharedSource.OnVideoSourceEncodedSample -= OnEncoded;
-            });
-            WirePeer(slot);
-            return slot;
+            unsubscribeVideoSource = () => sharedVideoSource.OnVideoSourceEncodedSample -= OnEncoded;
         }
 
-        var emptySlot = new PeerSlot(remoteNick, pc, sink, sinkEncoder, static () => { });
-        WirePeer(emptySlot);
-        return emptySlot;
+        Action unsubscribeAudioSource = static () => { };
+        if (sharedAudioSource is not null)
+        {
+            var audioFormats = sharedAudioSource.GetAudioSourceFormats();
+            if (audioFormats.Count > 0)
+            {
+                pc.addTrack(new MediaStreamTrack(audioFormats, MediaStreamStatusEnum.SendRecv));
+                void OnEncodedAudio(uint durationRtp, byte[] sample)
+                {
+                    if (!IsMuted)
+                        pc.SendAudio(durationRtp, sample);
+                }
+
+                sharedAudioSource.OnAudioSourceEncodedSample += OnEncodedAudio;
+                pc.OnAudioFormatsNegotiated += negotiated =>
+                {
+                    if (negotiated.Count == 0)
+                        return;
+
+                    try
+                    {
+                        sharedAudioSource.SetAudioSourceFormat(negotiated[0]);
+                        sharedAudioSource.SetAudioSinkFormat(negotiated[0]);
+                    }
+                    catch (Exception exception)
+                    {
+                        ReportAudioError(exception);
+                    }
+                };
+                pc.OnAudioFrameReceived += frame =>
+                {
+                    try
+                    {
+                        sharedAudioSource.GotEncodedMediaFrame(frame);
+                    }
+                    catch (Exception exception)
+                    {
+                        ReportAudioError(exception);
+                    }
+                };
+                unsubscribeAudioSource = () =>
+                    sharedAudioSource.OnAudioSourceEncodedSample -= OnEncodedAudio;
+            }
+        }
+
+        var slot = new PeerSlot(
+            remoteNick,
+            pc,
+            sink,
+            sinkEncoder,
+            () =>
+            {
+                unsubscribeVideoSource();
+                unsubscribeAudioSource();
+            });
+        WirePeer(slot);
+        return slot;
     }
 
     void WirePeer(PeerSlot slot)
@@ -250,7 +313,9 @@ public sealed class SipSorceryRtcMeshSession : IRtcMeshSession
             if (!_peers.TryAdd(remoteNick, slot))
             {
                 slot.Connection.Close("duplicate");
+                slot.UnsubscribeSource();
                 slot.Sink.Dispose();
+                slot.SinkEncoder.Dispose();
                 if (!_peers.TryGetValue(remoteNick, out slot))
                     return;
             }
@@ -325,6 +390,65 @@ public sealed class SipSorceryRtcMeshSession : IRtcMeshSession
         slot.Sink.Dispose();
         slot.SinkEncoder.Dispose();
     }
+
+    async Task StartAudioAsync(CancellationToken cancellationToken)
+    {
+        AudioEncoder? encoder = null;
+        WindowsAudioEndPoint? endpoint = null;
+        try
+        {
+            encoder = new AudioEncoder(includeOpus: true);
+            endpoint = new WindowsAudioEndPoint(encoder);
+            endpoint.OnAudioSourceError += ReportAudioError;
+            endpoint.OnAudioSinkError += ReportAudioError;
+            await endpoint.Start().WaitAsync(cancellationToken).ConfigureAwait(false);
+            _audioEncoder = encoder;
+            _audio = endpoint;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            if (endpoint is not null)
+                await CloseAudioEndpointAsync(endpoint).ConfigureAwait(false);
+            encoder?.Dispose();
+            throw;
+        }
+        catch (Exception exception)
+        {
+            if (endpoint is not null)
+                await CloseAudioEndpointAsync(endpoint).ConfigureAwait(false);
+            encoder?.Dispose();
+            ReportAudioError(exception);
+        }
+    }
+
+    async Task StopAudioAsync()
+    {
+        var endpoint = _audio;
+        _audio = null;
+        var encoder = _audioEncoder;
+        _audioEncoder = null;
+
+        if (endpoint is not null)
+            await CloseAudioEndpointAsync(endpoint).ConfigureAwait(false);
+        encoder?.Dispose();
+    }
+
+    static async Task CloseAudioEndpointAsync(WindowsAudioEndPoint endpoint)
+    {
+        try
+        {
+            await endpoint.Close().ConfigureAwait(false);
+        }
+        catch
+        {
+            // ignore device shutdown failures
+        }
+    }
+
+    void ReportAudioError(string errorMessage) =>
+        ReportAudioError(new InvalidOperationException(errorMessage));
+
+    void ReportAudioError(Exception exception) => AudioError?.Invoke(exception);
 
     void Emit(RtcSignalMessage message) => LocalSignal?.Invoke(message);
 
