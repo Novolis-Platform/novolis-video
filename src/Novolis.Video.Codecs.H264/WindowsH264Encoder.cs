@@ -52,6 +52,26 @@ public sealed class WindowsH264Encoder : IVideoEncoder
     /// <inheritdoc />
     public EncodedVideoFrame Encode(RawVideoFrame frame)
     {
+        if (!TryEncode(frame, out var encoded))
+        {
+            throw new InvalidOperationException(
+                "Windows Media Foundation accepted the frame but has not produced an H.264 access unit yet.");
+        }
+
+        return encoded
+            ?? throw new InvalidOperationException(
+                "Windows Media Foundation reported an encoded frame without an access unit.");
+    }
+
+    /// <summary>
+    /// Submits a frame and reports whether Media Foundation has an access unit ready.
+    /// Encoders are allowed to prime internally, so the first submitted frame may not
+    /// produce output until a later frame is submitted.
+    /// </summary>
+    public bool TryEncode(
+        RawVideoFrame frame,
+        out EncodedVideoFrame? encoded)
+    {
         ObjectDisposedException.ThrowIf(_disposed, this);
         ArgumentNullException.ThrowIfNull(frame);
         if (frame.Format != VideoPixelFormat.Bgra32)
@@ -64,21 +84,30 @@ public sealed class WindowsH264Encoder : IVideoEncoder
             throw new InvalidOperationException("Windows Media Foundation did not produce an NV12 frame.");
         }
 
-        if (!_encoder.ProcessInput(_nv12Buffer, frame.Timestamp)
-            || !_encoder.ProcessOutput(ref _encodedBuffer, out var length))
+        if (!_encoder.ProcessInput(_nv12Buffer, frame.Timestamp))
         {
-            throw new InvalidOperationException("Windows Media Foundation did not produce an H.264 access unit.");
+            throw new InvalidOperationException("Windows Media Foundation rejected the NV12 frame.");
         }
 
-        var accessUnit = _encodedBuffer.AsSpan(0, checked((int)length)).ToArray();
-        var isKeyFrame = _firstFrame;
-        _firstFrame = false;
-        return new EncodedVideoFrame(
-            _encodedWidth,
-            _encodedHeight,
-            frame.Timestamp,
-            accessUnit,
-            isKeyFrame);
+        while (_encoder.ProcessOutput(ref _encodedBuffer, out var length))
+        {
+            if (length == 0)
+                continue;
+
+            var accessUnit = _encodedBuffer.AsSpan(0, checked((int)length)).ToArray();
+            var isKeyFrame = _firstFrame;
+            _firstFrame = false;
+            encoded = new EncodedVideoFrame(
+                _encodedWidth,
+                _encodedHeight,
+                frame.Timestamp,
+                accessUnit,
+                isKeyFrame);
+            return true;
+        }
+
+        encoded = null;
+        return false;
     }
 
     /// <inheritdoc />
