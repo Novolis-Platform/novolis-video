@@ -10,16 +10,21 @@ public sealed class WindowsDesktopCaptureSource : IVideoCaptureSource
 {
     private readonly TimeSpan _frameInterval;
     private readonly bool _captureAllMonitors;
+    private readonly Rectangle? _captureBounds;
     private CancellationTokenSource? _cancellation;
     private Task? _captureTask;
 
     /// <summary>Creates a monitor capture source.</summary>
-    public WindowsDesktopCaptureSource(int framesPerSecond = 30, bool captureAllMonitors = true)
+    public WindowsDesktopCaptureSource(
+        int framesPerSecond = 30,
+        bool captureAllMonitors = true,
+        Rectangle? captureBounds = null)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(framesPerSecond, 1);
         ArgumentOutOfRangeException.ThrowIfGreaterThan(framesPerSecond, 120);
         _frameInterval = TimeSpan.FromSeconds(1d / framesPerSecond);
         _captureAllMonitors = captureAllMonitors;
+        _captureBounds = captureBounds;
     }
 
     /// <inheritdoc />
@@ -131,6 +136,9 @@ public sealed class WindowsDesktopCaptureSource : IVideoCaptureSource
 
     private Rectangle GetCaptureBounds()
     {
+        if (_captureBounds is { } captureBounds)
+            return captureBounds;
+
         if (!_captureAllMonitors)
             return Screen.PrimaryScreen?.Bounds ?? Rectangle.Empty;
 
