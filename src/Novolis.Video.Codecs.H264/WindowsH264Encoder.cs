@@ -8,6 +8,8 @@ namespace Novolis.Video.Codecs.H264;
 /// <summary>Encodes BGRA desktop frames with the Windows Media Foundation H.264 MFT.</summary>
 public sealed class WindowsH264Encoder : IVideoEncoder
 {
+    private readonly int _encodedWidth;
+    private readonly int _encodedHeight;
     private readonly ColorConverter _colorConverter;
     private readonly H264Encoder _encoder;
     private byte[] _nv12Buffer;
@@ -27,16 +29,18 @@ public sealed class WindowsH264Encoder : IVideoEncoder
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(framesPerSecond);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(averageBitrate);
 
+        _encodedWidth = RoundUpToCodecMultiple(width);
+        _encodedHeight = RoundUpToCodecMultiple(height);
         _colorConverter = new ColorConverter(
             PInvoke.MFVideoFormat_RGB32,
             PInvoke.MFVideoFormat_NV12,
-            (uint)width,
-            (uint)height);
+            (uint)_encodedWidth,
+            (uint)_encodedHeight);
         _colorConverter.Initialize();
 
         _encoder = new H264Encoder(
-            (uint)width,
-            (uint)height,
+            (uint)_encodedWidth,
+            (uint)_encodedHeight,
             (uint)framesPerSecond,
             1,
             (uint)averageBitrate);
@@ -53,7 +57,7 @@ public sealed class WindowsH264Encoder : IVideoEncoder
         if (frame.Format != VideoPixelFormat.Bgra32)
             throw new ArgumentException("The Windows H.264 encoder expects BGRA32 input.", nameof(frame));
 
-        var tightPixels = CopyTightBgra(frame);
+        var tightPixels = CopyPaddedBgra(frame, _encodedWidth, _encodedHeight);
         if (!_colorConverter.ProcessInput(tightPixels, frame.Timestamp)
             || !_colorConverter.ProcessOutput(ref _nv12Buffer, out _))
         {
@@ -70,8 +74,8 @@ public sealed class WindowsH264Encoder : IVideoEncoder
         var isKeyFrame = _firstFrame;
         _firstFrame = false;
         return new EncodedVideoFrame(
-            frame.Width,
-            frame.Height,
+            _encodedWidth,
+            _encodedHeight,
             frame.Timestamp,
             accessUnit,
             isKeyFrame);
@@ -88,19 +92,32 @@ public sealed class WindowsH264Encoder : IVideoEncoder
         _colorConverter.Dispose();
     }
 
-    private static byte[] CopyTightBgra(RawVideoFrame frame)
+    private static byte[] CopyPaddedBgra(
+        RawVideoFrame frame,
+        int width,
+        int height)
     {
-        var rowBytes = checked(frame.Width * 4);
-        if (frame.Stride == rowBytes)
+        var sourceRowBytes = checked(frame.Width * 4);
+        var destinationRowBytes = checked(width * 4);
+        if (frame.Width == width
+            && frame.Height == height
+            && frame.Stride == sourceRowBytes)
             return frame.Pixels;
 
-        var tight = new byte[checked(rowBytes * frame.Height)];
-        for (var row = 0; row < frame.Height; row++)
+        var padded = new byte[checked(destinationRowBytes * height)];
+        var rows = Math.Min(frame.Height, height);
+        var bytesToCopy = Math.Min(sourceRowBytes, destinationRowBytes);
+        for (var row = 0; row < rows; row++)
         {
-            frame.Pixels.AsSpan(row * frame.Stride, rowBytes)
-                .CopyTo(tight.AsSpan(row * rowBytes, rowBytes));
+            frame.Pixels.AsSpan(row * frame.Stride, bytesToCopy)
+                .CopyTo(padded.AsSpan(row * destinationRowBytes, bytesToCopy));
         }
 
-        return tight;
+        return padded;
     }
+
+    private static int RoundUpToCodecMultiple(int value) =>
+        checked((value + (int)H264Encoder.H264_RES_MULTIPLE - 1)
+            / (int)H264Encoder.H264_RES_MULTIPLE
+            * (int)H264Encoder.H264_RES_MULTIPLE);
 }
