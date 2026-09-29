@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using Novolis.Video;
@@ -11,6 +12,8 @@ public sealed class WindowsDesktopCaptureSource : IVideoCaptureSource
     private readonly TimeSpan _frameInterval;
     private readonly bool _captureAllMonitors;
     private readonly Rectangle? _captureBounds;
+    private readonly int _targetWidth;
+    private readonly int _targetHeight;
     private CancellationTokenSource? _cancellation;
     private Task? _captureTask;
 
@@ -18,13 +21,23 @@ public sealed class WindowsDesktopCaptureSource : IVideoCaptureSource
     public WindowsDesktopCaptureSource(
         int framesPerSecond = 30,
         bool captureAllMonitors = true,
-        Rectangle? captureBounds = null)
+        Rectangle? captureBounds = null,
+        int targetWidth = 0,
+        int targetHeight = 0)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(framesPerSecond, 1);
         ArgumentOutOfRangeException.ThrowIfGreaterThan(framesPerSecond, 120);
         _frameInterval = TimeSpan.FromSeconds(1d / framesPerSecond);
         _captureAllMonitors = captureAllMonitors;
         _captureBounds = captureBounds;
+        if (targetWidth < 0 || targetHeight < 0)
+            throw new ArgumentOutOfRangeException(
+                targetWidth == 0 ? nameof(targetHeight) : nameof(targetWidth));
+        if ((targetWidth == 0) != (targetHeight == 0))
+            throw new ArgumentException(
+                "Target width and height must both be zero or both be positive.");
+        _targetWidth = targetWidth;
+        _targetHeight = targetHeight;
     }
 
     /// <inheritdoc />
@@ -90,8 +103,11 @@ public sealed class WindowsDesktopCaptureSource : IVideoCaptureSource
         if (bounds.Width <= 0 || bounds.Height <= 0)
             return null;
 
-        using var bitmap = new Bitmap(bounds.Width, bounds.Height, PixelFormat.Format32bppArgb);
-        using (var graphics = Graphics.FromImage(bitmap))
+        using var captured = new Bitmap(
+            bounds.Width,
+            bounds.Height,
+            PixelFormat.Format32bppArgb);
+        using (var graphics = Graphics.FromImage(captured))
         {
             graphics.CopyFromScreen(
                 bounds.Left,
@@ -100,6 +116,30 @@ public sealed class WindowsDesktopCaptureSource : IVideoCaptureSource
                 0,
                 bounds.Size,
                 CopyPixelOperation.SourceCopy);
+        }
+
+        Bitmap? resized = null;
+        var bitmap = captured;
+        if (_targetWidth > 0
+            && (_targetWidth != captured.Width || _targetHeight != captured.Height))
+        {
+            resized = new Bitmap(
+                _targetWidth,
+                _targetHeight,
+                PixelFormat.Format32bppArgb);
+            using var graphics = Graphics.FromImage(resized);
+            graphics.CompositingMode = CompositingMode.SourceCopy;
+            graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
+            graphics.PixelOffsetMode = PixelOffsetMode.Half;
+            graphics.DrawImage(
+                captured,
+                new Rectangle(0, 0, _targetWidth, _targetHeight),
+                0,
+                0,
+                captured.Width,
+                captured.Height,
+                GraphicsUnit.Pixel);
+            bitmap = resized;
         }
 
         var rectangle = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
@@ -131,6 +171,7 @@ public sealed class WindowsDesktopCaptureSource : IVideoCaptureSource
         finally
         {
             bitmap.UnlockBits(locked);
+            resized?.Dispose();
         }
     }
 
