@@ -6,10 +6,10 @@
   <ItemGroup>
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.401" />
     <PackageVersion Include="SharpMediaFoundationInterop" Version="0.3.1" />
-    <PackageVersion Include="SIPSorcery" Version="10.0.16" />
-    <PackageVersion Include="SIPSorceryMedia.Abstractions" Version="10.0.16" />
-    <PackageVersion Include="SIPSorceryMedia.Windows" Version="10.0.16" />
+    <PackageVersion Include="SIPSorcery" Version="10.0.17" />
+    <PackageVersion Include="SIPSorceryMedia.Abstractions" Version="10.0.17" />
+    <PackageVersion Include="SIPSorceryMedia.Windows" Version="10.0.17" />
     <PackageVersion Include="SIPSorceryMedia.Encoders" Version="10.0.4" />
-    <PackageVersion Include="TUnit" Version="1.72.4" />
+    <PackageVersion Include="TUnit" Version="1.72.16" />
   </ItemGroup>
 </Project>
