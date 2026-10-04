@@ -8,6 +8,7 @@
     <Project Path="src/Novolis.Video.Rtc/Novolis.Video.Rtc.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Novolis.Video.Abstractions.Unit/Novolis.Video.Abstractions.Unit.csproj" />
     <Project Path="tests/Novolis.Video.Edit.Unit/Novolis.Video.Edit.Unit.csproj" />
   </Folder>
 </Solution>
