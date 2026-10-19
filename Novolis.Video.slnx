@@ -6,6 +6,7 @@
     <Project Path="src/Novolis.Video.Edit/Novolis.Video.Edit.csproj" />
     <Project Path="src/Novolis.Video.Capture.Windows/Novolis.Video.Capture.Windows.csproj" />
     <Project Path="src/Novolis.Video.Rtc/Novolis.Video.Rtc.csproj" />
+    <Project Path="src/Novolis.Video.Playback.Android/Novolis.Video.Playback.Android.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Novolis.Video.Abstractions.Unit/Novolis.Video.Abstractions.Unit.csproj" />
